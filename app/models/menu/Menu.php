@@ -1,4 +1,5 @@
 <?php
+namespace menu\Menu;
 
 class Menu extends Eloquent {
 	protected $table = 'web_menus';

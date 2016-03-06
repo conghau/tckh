@@ -1,8 +1,6 @@
 <?php
 
-use \ArticleDetails;
-
-class Articles extends Eloquent {
+class Articles extends \Eloquent {
 	protected $table = 'web_news_articles';
 	protected $primaryKey = 'id';
 

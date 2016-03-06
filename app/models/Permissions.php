@@ -1,5 +1,5 @@
 <?php
-
+namespace Permissions;
 class Permissions extends Eloquent {
 	protected $table = 'web_permissions';
 	protected $primaryKey = 'id';

@@ -1,8 +1,8 @@
 <?php
 
-use \Roles;
-use \Permissions;
-use \RolesPermissions;
+use app\models\Roles;
+use app\models\Permissions;
+use app\models\RolesPermissions;
 
 class RolesController extends \BaseController {
 	/**

@@ -1,8 +1,8 @@
 <?php
 
-use \Roles;
-use \RoleGroups;
-use \UserNRoles;
+use appp\models\Roles;
+// use \RoleGroups;
+use app\models\UserNRoles;
 
 class UserController extends \BaseController {
 	/**
