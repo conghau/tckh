@@ -1,5 +1,7 @@
 /bootstrap/compiled.php
-
+app/config/database.php
+.settings/org.eclipse.core.resources.prefs
+.settings/org.eclipse.core.runtime.prefs
 composer.phar
 composer.lock
 .env.*.php
