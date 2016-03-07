@@ -1,6 +1,6 @@
 <?php
 
-use \Menu;
+use app\models\menu\Menu;
 
 class PagesController extends \BaseController {
 

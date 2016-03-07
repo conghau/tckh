@@ -1,4 +1,5 @@
 <?php
+namespace news\ArticleDetails;
 
 class ArticleDetails extends Eloquent {
 	protected $table = 'web_news_articles_full';

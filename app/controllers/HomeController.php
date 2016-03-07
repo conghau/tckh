@@ -1,10 +1,10 @@
 <?php
 
 # news module
-use \Categories;
-use \Articles;
-use \ArticleDetails;
-use \VanBan;
+use app\models\news\Categories;
+// use app\models\news\Articles;
+use app\models\news\ArticleDetails;
+use app\models\qlvb\VanBan;
 
 class HomeController extends BaseController {
 

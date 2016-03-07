@@ -1,7 +1,7 @@
 <?php
 
-use \Categories;
-use \ArticleDetails;
+use app\models\news\Categories;
+use app\models\news\ArticleDetails;
 
 class ArticleController extends \BaseController {
 
