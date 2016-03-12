@@ -1,10 +1,4 @@
 <?php
-namespace App;
-use Session;
-use View;
-use Input;
-use DB;
-use Config;
 class BaseController extends \Controller {
     protected $userinfo;
 

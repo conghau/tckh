@@ -1,5 +1,4 @@
 <?php
-use App\BaseController;
 class WebLinkController extends BaseController {
 
     public static $admin_menu = array(

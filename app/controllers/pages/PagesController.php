@@ -1,8 +1,4 @@
 <?php
-use \App\Models\Menu\Menu;
-use \App\Models\Permissions;
-use \App\BaseController;
-
 class PagesController extends BaseController {
 
     public static $admin_menu = array(

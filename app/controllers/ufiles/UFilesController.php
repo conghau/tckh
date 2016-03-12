@@ -1,5 +1,4 @@
 <?php
-use App\BaseController;
 class FilesController extends BaseController {
     /**
     * Instantiate a new UserController instance.

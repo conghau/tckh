@@ -1,5 +1,4 @@
 <?php
-use App\BaseController;
 class MenuController extends BaseController {
 
     public static $admin_menu = array(

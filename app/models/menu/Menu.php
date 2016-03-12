@@ -1,7 +1,5 @@
 <?php
-namespace App\Models\Menu;
-
-class Menu extends Eloquent {
+class Menu extends \Eloquent {
 	protected $table = 'web_menus';
 	protected $primaryKey = 'id';
 

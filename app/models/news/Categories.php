@@ -1,6 +1,4 @@
 <?php
-namespace App\Models\News;
-use Eloquent;
 class Categories extends Eloquent {
 	protected $table = 'web_news_categories';
 	protected $primaryKey = 'id';

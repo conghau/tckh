@@ -1,5 +1,4 @@
 <?php
-use App\BaseController;
 class TCKHController extends BaseController {
     public static $admin_menu = array(
         array(
@@ -21,7 +20,7 @@ class TCKHController extends BaseController {
                 # not filter with action: login
                 'except' => array(
                     'listtapchi', 'xemtapchi', 'xembaiviet', 'xembaivietfile',
-                    'getfilecontent','downloadfile'
+                    'getfilecontent','downloadfile','search'
                 ))
         );
     }

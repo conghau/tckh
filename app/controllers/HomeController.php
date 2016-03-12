@@ -1,8 +1,4 @@
 <?php
-
-//# news module
-use App\BaseController;
-
 class HomeController extends BaseController {
 
 	/*

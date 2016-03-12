@@ -1,5 +1,4 @@
-<?php namespace App\Models;
-
+<?php
 class Permissions extends \Eloquent {
 	protected $table = 'web_permissions';
 	protected $primaryKey = 'id';

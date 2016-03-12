@@ -1,5 +1,4 @@
 <?php
-namespace App\Models\QLVB;
 class VanBan extends Eloquent {
 	protected $table = 'web_qlvb_vanban';
 	protected $primaryKey = 'id';

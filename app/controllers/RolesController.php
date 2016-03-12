@@ -1,10 +1,4 @@
 <?php
-
-use App\Models\Roles;
-use App\Models\Permissions;
-use App\Models\RolesPermissions;
-use App\BaseController;
-
 class RolesController extends BaseController {
 	/**
      * Instantiate a new UserController instance.
