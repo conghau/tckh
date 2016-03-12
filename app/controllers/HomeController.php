@@ -1,10 +1,7 @@
 <?php
 
-# news module
-use app\models\news\Categories;
-// use app\models\news\Articles;
-use app\models\news\ArticleDetails;
-use app\models\qlvb\VanBan;
+//# news module
+use App\BaseController;
 
 class HomeController extends BaseController {
 

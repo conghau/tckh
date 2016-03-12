@@ -1,9 +1,10 @@
 <?php
 
-use app\models\news\Categories;
-use app\models\news\ArticleDetails;
+use App\Models\News\Categories;
+use App\Models\News\ArticleDetails;
+use App\BaseController;
 
-class ArticleController extends \BaseController {
+class ArticleController extends BaseController {
 
     public static $admin_menu = array(
         array(

@@ -1,6 +1,6 @@
 <?php
-
-class TCKHController extends \BaseController {
+use App\BaseController;
+class TCKHController extends BaseController {
     public static $admin_menu = array(
         array(
             'title' => 'Quản lý',

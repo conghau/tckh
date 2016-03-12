@@ -1,6 +1,6 @@
 <?php
-
-class SystemController extends \BaseController {
+use App\BaseController;
+class SystemController extends BaseController {
 	/**
 	 * Instantiate a new UserController instance.
 	 */

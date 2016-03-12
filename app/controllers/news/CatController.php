@@ -1,6 +1,6 @@
 <?php
-
-class CatController extends \BaseController {
+use App\BaseController;
+class CatController extends BaseController {
 	public function __construct() {
         parent::__construct();
 		# require logined for this controller

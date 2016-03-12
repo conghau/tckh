@@ -1,10 +1,9 @@
 <?php
 
-use appp\models\Roles;
-// use \RoleGroups;
-use app\models\UserNRoles;
+use App\Models\Roles;
+use App\BaseController;
 
-class UserController extends \BaseController {
+class UserController extends BaseController {
 	/**
 	 * Instantiate a new UserController instance.
 	 */

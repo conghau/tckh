@@ -1,7 +1,7 @@
 <?php
-namespace Roles;
+namespace App\Models;
 
-class Roles extends Eloquent {
+class Roles extends \Eloquent {
 	protected $table = 'web_roles';
 	protected $primaryKey = 'id';
 

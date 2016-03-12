@@ -1,5 +1,5 @@
 <?php
-namespace RolesPermissions;
+namespace App\Models;
 
 class RolesPermissions extends Eloquent {
 	protected $table = 'web_roles_permissions';
