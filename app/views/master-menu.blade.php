@@ -6,9 +6,8 @@
         if ( $userinfo ) {
             $user_perms = $userinfo->get_permissions();
         }
-
         if ( !isset($userinfo) || !$userinfo ) {
-            $login_link = '';
+            $login_link = '<li><a href="'.url('login').'">Login</a></li>';
             $login_link_script = '';
         }
         else {
@@ -19,6 +18,15 @@
                         '<li><a href="'.url('news').'">Quản lý</a></li>'.
                         '<li><a href="'.url('user').'">Thay đổi mật khẩu</a></li>'.
                         '<li><a href="'.url('logout').'">Thoát quyền sử dụng</a></li>'.
+                    '</ul>'.
+                    '</li>';
+                $login_link_script = '';
+            } else if( $userinfo->is_access(array('change_password'))) {
+                $login_link = '<li class="dropdown">'.
+                    '<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">'.$userinfo->display_name.' <i class="icon-angle-down"></i></a>'.
+                    '<ul class="dropdown-menu">'.
+                    '<li><a href="'.url('user').'">Thay đổi mật khẩu</a></li>'.
+                    '<li><a href="'.url('logout').'">Thoát quyền sử dụng</a></li>'.
                     '</ul>'.
                     '</li>';
                 $login_link_script = '';
