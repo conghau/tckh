@@ -165,4 +165,11 @@ class User extends Eloquent implements UserInterface {
 		if ( $user_roles && sizeof($user_roles) > 0 ) return true;
 		else return false;
 	}
+
+    public static function isKeyExist($key, $value) {
+        if (User::where($key, '=', Input::get($value))->exists()) {
+            return true;
+        }
+        return false;
+    }
 }

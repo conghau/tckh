@@ -9,7 +9,9 @@ class UserController extends BaseController {
 		$this->beforeFilter('auth', array(
 			# not filter with action: login
 			'except' => array(
-				'login'
+				'login',
+                'userRegister',
+                'userStore'
 			))
 		);
 	}
@@ -29,6 +31,10 @@ class UserController extends BaseController {
         # thumnail
         Route::any('user/thumbnail','UserController@thumbnail');
         Route::any('user/dashboard','UserController@dashboard');
+
+        #user register
+        Route::get('user/register','UserController@userRegister');
+        Route::post('user/store', 'UserController@userStore');
     }
 
     public static function admin_menu() {
@@ -474,6 +480,63 @@ class UserController extends BaseController {
             else {
                 return View::make('mod/user/dashboard',array());
             }
+        }
+    }
+
+    /**
+     * User register function
+     */
+    public function userRegister() {
+        return View::make('mod/user/register');
+    }
+
+    /**
+     * Hàm lưu người dùng
+     * Nếu thành công, redirect đến trang cá nhân nếu không redirect về trang đăng kí
+     */
+    public function userStore() {
+
+
+        $messages = [
+            'required' => 'Trường :attribute không được để trống.',
+        ];
+
+        //validate
+        $rules = array(
+            'inputUserName'      => 'required',
+            'inputEmail'         => 'required|email',
+            'inputPassword'      => 'required',
+            'inputName'          => 'required'
+        );
+        $validator = Validator::make(Input::all(), $rules, $messages);
+
+
+        if( $validator->fails()) {
+            return Redirect::to('user/register')
+                ->withErrors($validator)
+                ->withInput(Input::except('password'));
+        } else {
+
+            //Kiểm tra username hoặc email tồn tại
+            $isExist = User::isKeyExist('username', Input::get('inputUserName')) || User::isKeyExist('email', Input::get('inputEmail'));
+            if($isExist) {
+                Session::flash('message', 'Tên tài khoản hoặc email đã tồn tại');
+                return Redirect::to('user/register')
+                    ->withInput(Input::except('password'));
+            }
+
+            //Lưu kết quả xuống DB
+            $user = new User();
+            $user->username = Input::get('inputUserName');
+            $user->email = Input::get('inputEmail');
+            $user->password = Hash::make(Input::get('inputPassword'));
+            $user->display_name = Input::get('inputName');
+
+            $user->save();
+
+            // redirect
+            Session::flash('message', 'Đăng kí thành công!');
+            return Redirect::to('user');
         }
     }
 }
