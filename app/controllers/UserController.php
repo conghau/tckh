@@ -518,9 +518,9 @@ class UserController extends BaseController {
         } else {
 
             //Kiểm tra username hoặc email tồn tại
-            $isExist = User::isKeyExist('username', Input::get('inputUserName')) || User::isKeyExist('email', Input::get('inputEmail'));
+            $isExist = User::isKeyExist('username', Input::get('inputUserName'));
             if($isExist) {
-                Session::flash('message', 'Tên tài khoản hoặc email đã tồn tại');
+                Session::flash('message', 'Tên tài khoản đã tồn tại');
                 return Redirect::to('user/register')
                     ->withInput(Input::except('password'));
             }
