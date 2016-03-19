@@ -77,6 +77,7 @@ HomeController::init_route();
 # User
 UserController::init_route();
 RolesController::init_route();
+PermissionsController::init_route();
 #
 ArticleController::init_route();
 PagesController::init_route();

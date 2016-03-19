@@ -31,4 +31,11 @@ class Permissions extends \Eloquent {
 
         return $result;
     }
+
+    public static function isKeyExist($key, $value) {
+        if (Permissions::where($key, '=', $value)->count() > 0) {
+            return true;
+        }
+        return false;
+    }
 }

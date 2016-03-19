@@ -5,7 +5,7 @@
     <div class="col-md-6 col-md-offset-3 form-register">
         @if (Session::has('message'))
         <div class="message-info alert alert-info">{{ Session::get('message') }}</div>
-        <?php Session::forget('info_message'); ?>
+        <?php Session::forget('message'); ?>
         @endif
         <div class="form-data-input">
             {{ Form::open(array('action' => 'UserController@userStore', 'method' => 'post')) }}
