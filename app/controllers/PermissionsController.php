@@ -23,6 +23,8 @@ class PermissionsController extends BaseController{
         Route::get('permission/del/{permisson_id}','PermissionsController@admin_del');
     }
 
+
+    // list tất cả phân quyền
     public function admin_list() {
         if ( $this->userinfo->sa != 1 ) return View::make('403');
 
@@ -34,6 +36,7 @@ class PermissionsController extends BaseController{
         ));
     }
 
+    //tạo mới phân quyền
     public function admin_create() {
         if ( $this->userinfo->sa != 1 ) return View::make('403');
 
@@ -143,6 +146,31 @@ class PermissionsController extends BaseController{
         $validator = Validator::make(Input::all(), $rules, $messages);
 
         return $validator;
+    }
+
+    // Xóa phân quyền
+    public function admin_del($permission_id) {
+        //kiểm tra admin
+        if ( $this->userinfo->sa != 1 ) return View::make('403');
+
+        if(empty($permission_id)) {
+            return Redirect::to('permissions');
+        }
+
+        $permission_info = Permissions::find($permission_id);
+        if ($permission_info) {
+
+            if($permission_info->delete()) {
+                cUtils::set_app_message('Xóa thành công !', cUtils::SUCCESS_MSG);
+            } else {
+                cUtils::set_app_message('Xóa không thành công !!!', cUtils::ERROR_MSG);
+            }
+
+            return Redirect::to('permissions');
+        }
+        else {
+            return View::make('404');
+        }
     }
 
 } 
