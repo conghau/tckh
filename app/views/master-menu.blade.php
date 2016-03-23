@@ -7,7 +7,8 @@
             $user_perms = $userinfo->get_permissions();
         }
         if ( !isset($userinfo) || !$userinfo ) {
-            $login_link = '<li><a href="'.url('login').'">Login</a></li>';
+            $login_link = '<li><a href="'.url('login').'">Login</a></li>'.
+                            '<li><a href="'.url('user/register').'">Đăng kí</a></li>';
             $login_link_script = '';
         }
         else {
