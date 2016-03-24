@@ -46,7 +46,8 @@ class UserController extends BaseController {
                         <a href="#">Quản lý User <i class="icon-angle-right pull-right"></i></a>
                         <ul class="dropdown-submenu">
                             <li><a href="' . url('user/list') . '">Danh sách User</a></li>
-                            <li><a href="' . url('roles') . '">Thiết lập Phân quyền</a></li>
+                            <li><a href="' . url('roles') . '">Thiết lập Vai trò</a></li>
+                            <li><a href="' . url('permissions') . '">Thiết lập Phân quyền</a></li>
                         </ul>
                 </li>';
         }
