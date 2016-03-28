@@ -19,7 +19,10 @@
 		],
 		"psr-0": { 
           "App": "app/"
-        }
+        },
+        "files": [
+            "app/libs/constant.php"
+        ]
 	},
 	"scripts": {
 		"post-install-cmd": [

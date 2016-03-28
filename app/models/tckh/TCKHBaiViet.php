@@ -37,4 +37,18 @@ class TCKHBaiViet extends Eloquent {
             return false;
         }
     }
+
+    public static function isKeyExist($key, $value) {
+        if (TCKHBaiViet::where($key, '=', $value)->count() > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function userCanEdit($baiviet) {
+        if ($baiviet->trangthai != TCKH_STATUS_NEW) {
+            return false;
+        }
+        return true;
+    }
 }

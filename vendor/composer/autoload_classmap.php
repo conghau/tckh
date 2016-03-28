@@ -34,6 +34,7 @@ return array(
     'Pages' => $baseDir . '/app/models/pages/Pages.php',
     'PagesController' => $baseDir . '/app/controllers/pages/PagesController.php',
     'Permissions' => $baseDir . '/app/models/Permissions.php',
+    'PermissionsController' => $baseDir . '/app/controllers/PermissionsController.php',
     'Roles' => $baseDir . '/app/models/Roles.php',
     'RolesController' => $baseDir . '/app/controllers/RolesController.php',
     'RolesPermissions' => $baseDir . '/app/models/RolesPermissions.php',

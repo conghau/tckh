@@ -49,6 +49,9 @@ class TCKHController extends BaseController {
 				
         Route::any('tckh/search','TCKHController@search');
 
+        Route::any('tckh/dangtckh', 'TCKHController@user_dangtckh');
+        Route::any('tckh/suatckh/{idbaiviet}', 'TCKHController@user_suatckh');
+
         /*Route::get('qlvb/loaivb/{loaivb_id?}','LoaiVBController@admin_listloaivb');
         Route::any('qlvb/createloaivb','LoaiVBController@admin_createloaivb');
         Route::any('qlvb/editloaivb/{loaivbid}','LoaiVBController@admin_editloaivb');
@@ -909,29 +912,180 @@ class TCKHController extends BaseController {
         return $upload_dir . '/' . $path['rel_path'] . '/' . str_replace('.','_',$basename);
     }
 
-		public function search() {
-			$kw = Input::get('kw');
-			# set paging params
-			Paginator::setPageName('searchpage');
-			
-			$query = DB::table('web_tckh_baiviet')
-				->join('web_tckh_tapchi', 'web_tckh_baiviet.id_sotapchi', '=', 'web_tckh_tapchi.id');
-			if ( $kw != '' ) {
-				$query = $query->where('web_tckh_baiviet.nhombaiviet', 'like', '%'.$kw.'%')
-					->orWhere('web_tckh_baiviet.tenbaiviet', 'like', '%'.$kw.'%')
-					->orWhere('web_tckh_baiviet.gioithieubaiviet', 'like', '%'.$kw.'%')
-					->orWhere('web_tckh_baiviet.tacgia', 'like', '%'.$kw.'%')
-					->orWhere('web_tckh_tapchi.tentapchi', 'like', '%'.$kw.'%')
-					->orWhere('web_tckh_tapchi.sotapchi', 'like', '%'.$kw.'%')
-					->orWhere('web_tckh_tapchi.namtapchi', 'like', '%'.$kw.'%');
-			}
-			$query = $query->select('web_tckh_baiviet.*', 'web_tckh_tapchi.sotapchi', 'web_tckh_tapchi.namtapchi')
-				->orderBy('web_tckh_tapchi.namtapchi', 'desc')
-				->orderBy('web_tckh_tapchi.sotapchi', 'desc')
-				->paginate(Config::get('tapchikhoahoc.search_paging_size'));
-				
-			return View::make('mod.tckh.searchresult', array(
-				'search_result' => $query
-			));
-		}
+    public function search() {
+        $kw = Input::get('kw');
+        # set paging params
+        Paginator::setPageName('searchpage');
+
+        $query = DB::table('web_tckh_baiviet')
+            ->join('web_tckh_tapchi', 'web_tckh_baiviet.id_sotapchi', '=', 'web_tckh_tapchi.id');
+        if ( $kw != '' ) {
+            $query = $query->where('web_tckh_baiviet.nhombaiviet', 'like', '%'.$kw.'%')
+                ->orWhere('web_tckh_baiviet.tenbaiviet', 'like', '%'.$kw.'%')
+                ->orWhere('web_tckh_baiviet.gioithieubaiviet', 'like', '%'.$kw.'%')
+                ->orWhere('web_tckh_baiviet.tacgia', 'like', '%'.$kw.'%')
+                ->orWhere('web_tckh_tapchi.tentapchi', 'like', '%'.$kw.'%')
+                ->orWhere('web_tckh_tapchi.sotapchi', 'like', '%'.$kw.'%')
+                ->orWhere('web_tckh_tapchi.namtapchi', 'like', '%'.$kw.'%');
+        }
+        $query = $query->select('web_tckh_baiviet.*', 'web_tckh_tapchi.sotapchi', 'web_tckh_tapchi.namtapchi')
+            ->orderBy('web_tckh_tapchi.namtapchi', 'desc')
+            ->orderBy('web_tckh_tapchi.sotapchi', 'desc')
+            ->paginate(Config::get('tapchikhoahoc.search_paging_size'));
+
+        return View::make('mod.tckh.searchresult', array(
+            'search_result' => $query
+        ));
+    }
+
+
+    /**
+     * User viết bài viết TCKH mới
+     * @return mixed
+     */
+    public function user_dangtckh() {
+
+        // Kiểm tra permissions
+        if ( !$this->userinfo->is_access(array('viet_bai_tckh')) ) {
+            return View::make('403')->with('message', 'Không có quyền truy cập !!!');
+        }
+
+        $list_nhombaiviet = TCKHNhomBaiViet::orderBy('tennhombaiviet')->get();
+        if(Input::get('do_save')) {
+
+            // Validate user input
+            $validate = $this->validateTCKH();
+            if(!$validate) {
+                return Redirect::to('tckh/dangtckh')
+                    ->withErrors($validate);
+            }
+
+            $tenBaiViet = Input::get('txtTenBaiViet');
+
+            $isExist = TCKHBaiViet::isKeyExist('tenbaiviet', $tenBaiViet);
+            if($isExist) {
+                Session::flash('message', 'Tên bài viết đã tồn tại');
+                return Redirect::to('tckh/dangtckh');
+            }
+
+            // Tạo bài viết mới
+            $baiviet = new TCKHBaiViet();
+            $baiviet->nhombaiviet = Input::get('txtNhomBaiViet');
+            $baiviet->tenbaiviet = $tenBaiViet;
+            $baiviet->gioithieubaiviet = Input::get('txtGioiThieu');
+            $baiviet->noidung = Input::get('txtNoiDung');
+            $baiviet->usernhap = $this->userinfo->id;
+
+            // Json_endcode mảng tên các tác giả và lưu về DB
+            $tacgia = Input::get('txtTacGia');
+            $list_tacgia = array();
+            if ( $tacgia && count($tacgia) > 0 ) {
+                $list_tacgia = array();
+                foreach ( $tacgia as $tg ) array_push($list_tacgia, $tg);
+            }
+
+            $baiviet->tacgia = json_encode($list_tacgia, JSON_UNESCAPED_UNICODE);
+            $baiviet->trangthai = TCKH_STATUS_NEW;
+
+            // Lưu bị lỗi
+            if (!$baiviet->save()) {
+                cUtils::set_app_message('Đăng bài tạp chí khoa học bị lỗi !', cUtils::ERROR_MSG);
+                return Redirect::to('tckh/dangtckh');
+            }
+
+            // Lưu thành công
+            cUtils::set_app_message_refresh_all_page('Đăng bài thành công. Vui lòng đợi hội đồng phản biện !', cUtils::SUCCESS_MSG,
+                '');
+
+        }
+        return View::make('mod.tckh.taobaiviet', array(
+            'list_nhombaiviet' => $list_nhombaiviet
+        ));
+    }
+
+    /**
+     * User sửa bài viết TCKH
+     */
+    public function user_suatckh($idbaiviet) {
+
+
+        // Kiểm tra permissions
+        if ( !$this->userinfo->is_access(array('viet_bai_tckh')) ) {
+            return View::make('403')->with('message', 'Không có quyền truy cập !!!');
+        }
+
+        $list_nhombaiviet = TCKHNhomBaiViet::orderBy('tennhombaiviet')->get();
+
+        if($idbaiviet == null) {
+            Session::flash('message', 'Lỗi xử lý');
+            return Redirect::to('/');
+        }
+        $baivietinfo = TCKHBaiViet::find($idbaiviet);
+
+        if (!$baivietinfo) {
+            Session::flash('message', 'Không thấy bài viết yêu cầu');
+            return Redirect::to('/');
+        }
+
+        $canEdit = TCKHBaiViet::userCanEdit($baivietinfo);
+        if (!$canEdit)  {
+            cUtils::set_app_message_refresh_all_page('Bài viết đang được hội đồng phản biện chấm, không thể sửa!', cUtils::SUCCESS_MSG,
+                '');
+        }
+
+        if (Input::get('do_save')) {
+
+            // validate
+            $validate = $this->validateTCKH();
+
+            if( $validate->fails()) {
+                return Redirect::to('tckh/suatckh')
+                    ->withErrors($validate);
+            }
+
+
+            $baivietinfo->nhombaiviet = Input::get('txtNhomBaiViet');
+            $baivietinfo->tenbaiviet = Input::get('txtTenBaiViet');
+            $baivietinfo->gioithieubaiviet = Input::get('txtGioiThieu');
+            $baivietinfo->noidung = Input::get('txtNoiDung');
+
+            // Lưu bị lỗi
+            if (!$baivietinfo->save()) {
+                cUtils::set_app_message('Sửa bài tạp chí khoa học bị lỗi !', cUtils::ERROR_MSG);
+                return Redirect::to('tckh/dangtckh');
+            }
+
+            // Lưu thành công
+            cUtils::set_app_message_refresh_all_page('Sửa bài thành công. Vui lòng đợi hội đồng phản biện !', cUtils::SUCCESS_MSG,
+                '');
+
+        }
+
+        return View::make('mod.tckh.taobaiviet', array(
+            'baivietinfo' => $baivietinfo,
+            'list_nhombaiviet' => $list_nhombaiviet
+        ));
+
+
+
+    }
+
+
+    /**
+     * Validate
+     */
+    private function validateTCKH() {
+
+        $messages = [
+            'required' => 'Trường :attribute không được để trống.',
+        ];
+
+        //validate
+        $rules = array(
+            'txtTenBaiViet'                 => 'required'
+        );
+        $validator = Validator::make(Input::all(), $rules, $messages);
+
+        return $validator;
+    }
 }
