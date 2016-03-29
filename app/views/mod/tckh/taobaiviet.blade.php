@@ -33,7 +33,7 @@ if ( isset($baivietinfo) && $baivietinfo ) {
         </div>
 
         <div class="content">
-            {{ Form::open(array('url' => $form_action, 'id' => 'form_baiviet_tapchi', 'onsubmit' => 'return check_baiviet_tapchi_form();')) }}
+            {{ Form::open(array('url' => $form_action, 'id' => 'form_baiviet_tapchi', 'files'=>true, 'onsubmit' => 'return check_baiviet_tapchi_form();')) }}
 
             <?php if ( Session::has('message') ) { ?>
                 <div class="alert alert-danger" role="alert"><?php echo Session::get('message') ?></div>
@@ -86,6 +86,13 @@ if ( isset($baivietinfo) && $baivietinfo ) {
                     <td valign="top">Nội dung:</td>
                     <td id="paper_content">
                         <textarea rows="10" class="form-control" name="txtNoiDung" id="txtNoiDung" >{{ @$baivietinfo->noidung }}</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top">Hoặc có thể upload file</td>
+                    <td id="file_content">
+                        <label>File: </label> {{ @$fileInfo->file_path }}
+                        {{ Form::file('fileUpload') }}
                     </td>
                 </tr>
                 <tr>

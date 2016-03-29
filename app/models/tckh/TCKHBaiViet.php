@@ -46,7 +46,7 @@ class TCKHBaiViet extends Eloquent {
     }
 
     public static function userCanEdit($baiviet) {
-        if ($baiviet->trangthai != TCKH_STATUS_NEW) {
+        if ($baiviet->trangthai != TCKH_STATUS_NEW && $baiviet->trangthai != TCKH_STATUS_EDITTING) {
             return false;
         }
         return true;

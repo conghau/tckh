@@ -949,7 +949,6 @@ class TCKHController extends BaseController {
         if ( !$this->userinfo->is_access(array('viet_bai_tckh')) ) {
             return View::make('403')->with('message', 'Không có quyền truy cập !!!');
         }
-
         $list_nhombaiviet = TCKHNhomBaiViet::orderBy('tennhombaiviet')->get();
         if(Input::get('do_save')) {
 
@@ -960,7 +959,8 @@ class TCKHController extends BaseController {
                     ->withErrors($validate);
             }
 
-            $tenBaiViet = Input::get('txtTenBaiViet');
+            $tenBaiViet = trim(Input::get('txtTenBaiViet'));
+            $nhomBaiViet = trim(Input::get('txtNhomBaiViet'));
 
             $isExist = TCKHBaiViet::isKeyExist('tenbaiviet', $tenBaiViet);
             if($isExist) {
@@ -968,12 +968,26 @@ class TCKHController extends BaseController {
                 return Redirect::to('tckh/dangtckh');
             }
 
+            if(Input::get('txtNoidung') === null && (!Input::hasFile('fileUpload'))) {
+                Session::flash('message', 'Bạn phải cung cấp nội dung cho tạp chí, hoặc upload file tạp chí khoa học!');
+                return Redirect::to('tckh/dangtckh');
+            }
+
+            # kt nhom co chua
+            $checkNhomBaiViet = TCKHNhomBaiViet::where('tennhombaiviet', '=', $nhomBaiViet)->get();
+            if ( !$checkNhomBaiViet || 0 === count($checkNhomBaiViet)) {
+                # chua co -> insert mới
+                $nhombaivietmoi = new TCKHNhomBaiViet();
+                $nhombaivietmoi->tennhombaiviet = $nhomBaiViet;
+                $nhombaivietmoi->save();
+            }
+
             // Tạo bài viết mới
             $baiviet = new TCKHBaiViet();
-            $baiviet->nhombaiviet = Input::get('txtNhomBaiViet');
+            $baiviet->nhombaiviet = $nhomBaiViet;
             $baiviet->tenbaiviet = $tenBaiViet;
-            $baiviet->gioithieubaiviet = Input::get('txtGioiThieu');
-            $baiviet->noidung = Input::get('txtNoiDung');
+            $baiviet->gioithieubaiviet = trim(Input::get('txtGioiThieu'));
+            $baiviet->noidung = trim(Input::get('txtNoidung'));
             $baiviet->usernhap = $this->userinfo->id;
 
             // Json_endcode mảng tên các tác giả và lưu về DB
@@ -991,6 +1005,45 @@ class TCKHController extends BaseController {
             if (!$baiviet->save()) {
                 cUtils::set_app_message('Đăng bài tạp chí khoa học bị lỗi !', cUtils::ERROR_MSG);
                 return Redirect::to('tckh/dangtckh');
+            }
+
+            if (Input::file('fileUpload')->isValid()) {
+
+                //Upload file
+                $date = date('Ymd');
+                $tckh_upload_path = public_path() . '/upload/tckh/' . $date . '/';
+
+                if (!file_exists($tckh_upload_path)) {
+                    mkdir($tckh_upload_path, 0777);
+                }
+
+                $extension = Input::file('fileUpload')->getClientOriginalExtension();
+                $fileName = Input::file('fileUpload')->getClientOriginalName();
+                $fileSize = Input::file('fileUpload')->getSize();
+
+                $uploadSuccess = Input::file('fileUpload')->move($tckh_upload_path, $fileName);
+
+                if(!$uploadSuccess) {
+                    cUtils::set_app_message('Upload bài báo bị lỗi !', cUtils::ERROR_MSG);
+                    return Redirect::to('tckh/dangtckh');
+                }
+
+                // Lưu vào database
+                $uploadFile = new UFiles();
+                $uploadFile->context_id = $baiviet->id;
+                $uploadFile->context_name = TCKH;
+                $uploadFile->file_path = $date . '\\' . $fileName;
+                $uploadFile->file_ext = $extension;
+                $uploadFile->file_size = $fileSize;
+                $uploadFile->tmp = 0;
+                $uploadFile->deleted = 0;
+                $uploadFile->userupload = $this->userinfo->id;
+
+                if (!$uploadFile->save()) {
+                    cUtils::set_app_message('Xử lí lỗi file upload. Thử upload lại sau !', cUtils::ERROR_MSG);
+                    return Redirect::to('tckh/dangtckh');
+                }
+
             }
 
             // Lưu thành công
@@ -1014,13 +1067,17 @@ class TCKHController extends BaseController {
             return View::make('403')->with('message', 'Không có quyền truy cập !!!');
         }
 
+
+
         $list_nhombaiviet = TCKHNhomBaiViet::orderBy('tennhombaiviet')->get();
 
         if($idbaiviet == null) {
             Session::flash('message', 'Lỗi xử lý');
             return Redirect::to('/');
         }
+
         $baivietinfo = TCKHBaiViet::find($idbaiviet);
+        $uploadFile = UFiles::where('context_id', '=', $idbaiviet)->first();
 
         if (!$baivietinfo) {
             Session::flash('message', 'Không thấy bài viết yêu cầu');
@@ -1043,16 +1100,77 @@ class TCKHController extends BaseController {
                     ->withErrors($validate);
             }
 
+            $tenBaiViet = trim(Input::get('txtTenBaiViet'));
+            $nhomBaiViet = trim(Input::get('txtNhomBaiViet'));
 
-            $baivietinfo->nhombaiviet = Input::get('txtNhomBaiViet');
-            $baivietinfo->tenbaiviet = Input::get('txtTenBaiViet');
-            $baivietinfo->gioithieubaiviet = Input::get('txtGioiThieu');
-            $baivietinfo->noidung = Input::get('txtNoiDung');
+            if(null === Input::get('txtNoidung') && (null === $uploadFile->file_path)) {
+                Session::flash('message', 'Bạn phải cung cấp nội dung cho tạp chí, hoặc upload file tạp chí khoa học!');
+                return Redirect::to('tckh/suatckh'.'/'.$idbaiviet);
+            }
+
+            # kt nhom co chua
+            $checkNhomBaiViet = TCKHNhomBaiViet::where('tennhombaiviet', '=', $nhomBaiViet)->get();
+            if ( !$checkNhomBaiViet || 0 === count($checkNhomBaiViet)) {
+                # chua co -> insert mới
+                $nhombaivietmoi = new TCKHNhomBaiViet();
+                $nhombaivietmoi->tennhombaiviet = $nhomBaiViet;
+                $nhombaivietmoi->save();
+            }
+
+            //Cập nhật thông tin bài viết
+            $baivietinfo->nhombaiviet = $nhomBaiViet;
+            $baivietinfo->tenbaiviet = $tenBaiViet;
+            $baivietinfo->gioithieubaiviet = trim(Input::get('txtGioiThieu'));
+            $baivietinfo->noidung = trim(Input::get('txtNoiDung'));
 
             // Lưu bị lỗi
             if (!$baivietinfo->save()) {
                 cUtils::set_app_message('Sửa bài tạp chí khoa học bị lỗi !', cUtils::ERROR_MSG);
                 return Redirect::to('tckh/dangtckh');
+            }
+
+
+            if (Input::hasFile('fileUpload')) {
+
+                if (!Input::file('fileUpload')->isValid()) {
+                    cUtils::set_app_message('Lỗi file đính kèm, vui lòng thử lại sau !', cUtils::ERROR_MSG);
+                    return Redirect::to('tckh/suatckh'.'/'.$idbaiviet);
+                }
+
+                //Upload file
+                $date = date('Ymd');
+                $tckh_upload_path = public_path() . '/upload/tckh/' . $date . '/';
+
+                if (!file_exists($tckh_upload_path)) {
+                    mkdir($tckh_upload_path, 0777);
+                }
+
+                $extension = Input::file('fileUpload')->getClientOriginalExtension();
+                $fileName = Input::file('fileUpload')->getClientOriginalName();
+                $fileSize = Input::file('fileUpload')->getSize();
+
+                $uploadSuccess = Input::file('fileUpload')->move($tckh_upload_path, $fileName);
+
+                if(!$uploadSuccess) {
+                    cUtils::set_app_message('Upload bài báo bị lỗi !', cUtils::ERROR_MSG);
+                    return Redirect::to('tckh/suatckh'.'/'.$idbaiviet);
+                }
+
+                // Lưu vào database
+                $uploadFile->context_id = $idbaiviet;
+                $uploadFile->context_name = TCKH;
+                $uploadFile->file_path = $date . '\\' . $fileName;
+                $uploadFile->file_ext = $extension;
+                $uploadFile->file_size = $fileSize;
+                $uploadFile->tmp = 0;
+                $uploadFile->deleted = 0;
+                $uploadFile->userupload = $this->userinfo->id;
+
+                if (!$uploadFile->save()) {
+                    cUtils::set_app_message('Xử lí lỗi file upload. Thử upload lại sau !', cUtils::ERROR_MSG);
+                    return Redirect::to('tckh/suatckh'.'/'.$idbaiviet);
+                }
+
             }
 
             // Lưu thành công
@@ -1063,11 +1181,9 @@ class TCKHController extends BaseController {
 
         return View::make('mod.tckh.taobaiviet', array(
             'baivietinfo' => $baivietinfo,
+            'fileInfo' => $uploadFile,
             'list_nhombaiviet' => $list_nhombaiviet
         ));
-
-
-
     }
 
 
