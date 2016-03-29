@@ -49,8 +49,10 @@ class TCKHController extends BaseController {
 				
         Route::any('tckh/search','TCKHController@search');
 
-        Route::any('tckh/dangtckh', 'TCKHController@user_dangtckh');
-        Route::any('tckh/suatckh/{idbaiviet}', 'TCKHController@user_suatckh');
+        Route::any('tckh/user/dangtckh', 'TCKHController@user_dangtckh');
+        Route::any('tckh/user/suatckh/{idbaiviet}', 'TCKHController@user_suatckh');
+        Route::any('tckh/user/list', 'TCKHController@user_listTCKH');
+
 
         /*Route::get('qlvb/loaivb/{loaivb_id?}','LoaiVBController@admin_listloaivb');
         Route::any('qlvb/createloaivb','LoaiVBController@admin_createloaivb');
@@ -1061,13 +1063,10 @@ class TCKHController extends BaseController {
      */
     public function user_suatckh($idbaiviet) {
 
-
         // Kiểm tra permissions
         if ( !$this->userinfo->is_access(array('viet_bai_tckh')) ) {
             return View::make('403')->with('message', 'Không có quyền truy cập !!!');
         }
-
-
 
         $list_nhombaiviet = TCKHNhomBaiViet::orderBy('tennhombaiviet')->get();
 
@@ -1077,6 +1076,13 @@ class TCKHController extends BaseController {
         }
 
         $baivietinfo = TCKHBaiViet::find($idbaiviet);
+
+        // Kiểm tra phải user đang đăng nhập đúng là tác giả đăng bài báo không.
+        if ($baivietinfo->usernhap != $this->userinfo->id) {
+            Session::flash('message', 'Bạn không đủ quyền truy cập bài viết này');
+            return Redirect::to('/');
+        }
+
         $uploadFile = UFiles::where('context_id', '=', $idbaiviet)->first();
 
         if (!$baivietinfo) {
@@ -1184,6 +1190,27 @@ class TCKHController extends BaseController {
             'fileInfo' => $uploadFile,
             'list_nhombaiviet' => $list_nhombaiviet
         ));
+    }
+
+
+    public function user_listTCKH() {
+
+        // Kiểm tra permissions
+        if ( !$this->userinfo->is_access(array('viet_bai_tckh')) ) {
+            return View::make('403')->with('message', 'Không có quyền truy cập !!!');
+        }
+
+
+        $dsbaiviet = TCKHBaiViet::where('usernhap', '=', $this->userinfo->id)
+            ->orderBy('nhombaiviet')
+            ->paginate(Config::get('tckh.list_sotapchi_pagesize'));
+
+
+        return View::make('mod/tckh/list_tckh', array(
+            'list_baiviet' => $dsbaiviet
+        ));
+
+
     }
 
 
