@@ -22,17 +22,17 @@
                     '</ul>'.
                     '</li>';
                 $login_link_script = '';
-            } else if( $userinfo->is_access(array('change_password'))) {
+            } else if( $userinfo->is_access(array('viet_bai_tckh'))) {
                 $login_link = '<li class="dropdown">'.
                     '<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">'.$userinfo->display_name.' <i class="icon-angle-down"></i></a>'.
                     '<ul class="dropdown-menu">'.
+                    '<li><a href="'.url('tckh/user/list').'">Quản lí Tạp chí khoa học</a></li>'.
                     '<li><a href="'.url('user').'">Thay đổi mật khẩu</a></li>'.
                     '<li><a href="'.url('logout').'">Thoát quyền sử dụng</a></li>'.
                     '</ul>'.
                     '</li>';
                 $login_link_script = '';
-            }
-            else {
+            } else {
                 $login_link = '';
                 $login_link_script = '';
             }

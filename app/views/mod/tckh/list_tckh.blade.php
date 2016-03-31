@@ -4,7 +4,7 @@
 {{
 SystemController::breadcrumb(array(
 array(
-'url' => 'tckh',
+'url' => 'tckh/user/list',
 'title' => 'Quản lý tạp chí khoa học',
 'active' => false
 ),
@@ -52,7 +52,7 @@ array(
                     <td>{{ $stt++ }}</td>
                     <td>{{ $baiviet->id }}</td>
                     <td>{{ $baiviet->nhombaiviet }}</td>
-                    <td>{{ $baiviet->tenbaiviet }}</td>
+                    <td><a href="{{url('tckh/user/suatckh/'.$baiviet->id)}}"> {{ $baiviet->tenbaiviet }} </a></td>
                     <td>{{ $baiviet->gioithieubaiviet }}</td>
                     <td>
                         <?php

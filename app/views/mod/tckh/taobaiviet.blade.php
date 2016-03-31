@@ -1,17 +1,17 @@
 @extends('layout/default-layout')
 <?php
 $page_title = 'Đăng bài Tạp chí khoa học';
-$form_action = 'tckh/dangtckh';
+$form_action = 'tckh/user/dangtckh';
 if ( isset($baivietinfo) && $baivietinfo ) {
     $page_title = 'Sửa thông tin bài viết trên số tạp chí';
-    $form_action = 'tckh/suatckh/'.$baivietinfo->id;
+    $form_action = 'tckh/user/suatckh/'.$baivietinfo->id;
 }
 ?>
 @section('view_content')
 {{
     SystemController::breadcrumb(array(
         array(
-            'url' => 'tckh',
+            'url' => 'tckh/user/list',
             'title' => 'Quản lý tạp chí khoa học',
             'active' => false
         ),
