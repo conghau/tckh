@@ -84,8 +84,10 @@
                     <div class="user bg-default bg-light-rtl">
                         <div class="info" style="width:100%">
                             <a href="#" class="informer informer-three" style="bottom: 45px;text-align: left;">
+                                @if(isset($userinfo) and null !== $userinfo)
                                 <span>{{ $userinfo->username }}</span>
                                 {{$userinfo->display_name}}
+                                @endif
                             </a>
                             <img src="{{url('user/thumbnail')}}" class="img-circle img-thumbnail" style="width:90px;border-radius: 0px;float:right;" />
                         </div>

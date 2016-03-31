@@ -84,3 +84,5 @@ PagesController::init_route();
 MenuController::init_route();
 TCKHController::init_route();
 WebLinkController::init_route();
+# Orders
+OrdersController::init_route();
