@@ -9,9 +9,14 @@
 			</div>
 			<div>&nbsp;</div>
 			<button class="btn btn-primary" onclick="do_download_file()">Tải file</button>
-    </div>
+			<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".popup-sms-modal">Large modal</button>
+	</div>
 </div>
+@include('popup-sms') 
 <script type="text/javascript">
+/* $(documment).ready(function(){
+	$('#myModal').modal()  
+}); */
 do_download_file = function() {
 	var dtoken = '{{ $dtoken }}';
 	var url = '{{ Request::url() }}';
