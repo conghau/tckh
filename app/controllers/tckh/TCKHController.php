@@ -991,6 +991,7 @@ class TCKHController extends BaseController {
             $baiviet->gioithieubaiviet = trim(Input::get('txtGioiThieu'));
             $baiviet->noidung = trim(Input::get('txtNoidung'));
             $baiviet->usernhap = $this->userinfo->id;
+            $baiviet->ngaynhap = time();
 
             // Json_endcode mảng tên các tác giả và lưu về DB
             $tacgia = Input::get('txtTacGia');

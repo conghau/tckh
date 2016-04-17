@@ -86,3 +86,5 @@ TCKHController::init_route();
 WebLinkController::init_route();
 # Orders
 OrdersController::init_route();
+# Hội đồng phản biện
+HDPBController::init_route();
